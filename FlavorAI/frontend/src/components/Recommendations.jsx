@@ -1,76 +1,99 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './Recommendations.css';
 
-// Helper function to render stars based on rating
+// Helper function to render stars (if you want to map numeric rating to star icons)
 const renderStars = (rating) => {
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-  
+
   return (
     <>
       {[...Array(fullStars)].map((_, i) => <span key={`full-${i}`} className="star filled">★</span>)}
-      {halfStar && <span key="half" className="star half">★</span>} {/* Placeholder for half star, needs specific CSS */}
+      {halfStar && <span key="half" className="star half">★</span>}
       {[...Array(emptyStars)].map((_, i) => <span key={`empty-${i}`} className="star empty">☆</span>)}
     </>
   );
 };
 
-// Sample data for recommendations (updated with tags)
-const sampleRecommendations = [
-  {
-    id: 1,
-    title: 'Taco Bell',
-    distance: '1.5 miles away',
-    rating: 4.0, // Example rating
-    description: 'Doritos Locos Tacos - Regular',
-    tags: ['Crunchy', 'Low Cal', 'Fan Fav']
-  },
-  {
-    id: 2,
-    title: 'Raising Canes',
-    distance: '7 miles away',
-    rating: 3.0, // Example rating
-    description: '', // No description in the image
-    tags: [] // No tags in the image
-  },
-  {
-    id: 3,
-    title: 'Circle K', // Assuming this is a restaurant/food place for the example
-    distance: '20 miles away',
-    rating: 5.0, // Example rating
-    description: '', // No description in the image
-    tags: [] // No tags in the image
-  }
-];
-
 const Recommendations = () => {
+  // State to hold recommended restaurants from the backend
+  const [recommendations, setRecommendations] = useState([]);
+
+  useEffect(() => {
+    // Example call to your Flask endpoint
+    const fetchRecommendations = async () => {
+      try {
+        // This example uses a GET route: /recommendations/simple/<user_id>
+        // or you might be using the POST route /recommendations/<user_id>
+        // Adjust as needed.
+
+        // If using GET:
+        // const { data } = await axios.get("http://127.0.0.1:5000/recommendations/user123");
+
+        // If using POST (with lat/lon, etc.):
+        // (Uncomment if your server expects a POST with body data.)
+        /*
+        const { data } = await axios.post("http://127.0.0.1:5000/recommendations/user123", {
+          lat: 34.05,
+          lon: -118.24,
+          radius_value: 2,
+          radius_unit: "miles",
+          triedFoods: ["Burger Bonanza"]
+        });
+        */
+
+        // For demonstration, let’s assume a GET route with some sample user_id
+        const { data } = await axios.post("http://127.0.0.1:5000/recommendations/user123", {
+          lat: 34.05,
+          lon: -118.24,
+          radius_value: 2,
+          radius_unit: "miles",
+          triedFoods: []
+        });
+
+        // The data structure is presumably { recommendations: [ ... ] }
+        if (data && data.recommendations) {
+          setRecommendations(data.recommendations);
+        }
+      } catch (error) {
+        console.error("Error fetching recommendations:", error);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
+
   return (
     <div className="recommendations-container">
       <div className="recommendations-content">
         <h1 className="recommendations-title">Recommendations</h1>
-        
+
         <div className="recommendation-bubbles">
-          {sampleRecommendations.map((recommendation) => (
-            <Link to={`/restaurant/${recommendation.id}`} key={recommendation.id} className="recommendation-bubble-link">
+          {recommendations.map((rec, index) => (
+            <Link
+              to={`/restaurant/${rec.restaurant_id || index}`}
+              key={rec.restaurant_id || index}
+              className="recommendation-bubble-link"
+            >
               <div className="recommendation-bubble">
                 <div className="bubble-header">
-                  <h3 className="bubble-title">{recommendation.title}</h3>
+                  <h3 className="bubble-title">{rec.name}</h3>
                   <div className="bubble-rating">
-                    {renderStars(recommendation.rating)}
+                    {/* If you want to map a numeric "similarity" or "salty" to star rating,
+                        you could do something like: renderStars(rec.salty) */}
+                    {/* For demonstration, let's suppose rec has a "rating" key or "similarity" */}
+                    {renderStars(rec.salty || 3)} 
                   </div>
                 </div>
                 <div className="bubble-content">
-                  <p className="bubble-distance">{recommendation.distance}</p>
-                  {recommendation.description && <p className="bubble-description">{recommendation.description}</p>}
-                  {recommendation.tags && recommendation.tags.length > 0 && (
-                    <div className="bubble-tags">
-                      {recommendation.tags.map((tag, index) => (
-                        <span key={index} className="bubble-tag">{tag}</span>
-                      ))}
-                    </div>
-                  )}
+                  <p className="bubble-distance">
+                    {rec.vicinity || "Unknown distance"}
+                  </p>
+                  {/* If your backend returns other fields (like rec.textures, rec.sweet, etc.),
+                      you can display them as well */}
                 </div>
               </div>
             </Link>
