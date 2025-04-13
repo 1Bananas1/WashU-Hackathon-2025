@@ -131,3 +131,69 @@
   font-size: 0.8rem;
   font-weight: 500;
 }
+
+/* Example stylings in Recommendations.css */
+
+/* The main container is likely already styled. Below are additions for sliders. */
+
+.slider-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.slider-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+/* The slider itself */
+.slider {
+  width: 200px;
+  height: 6px;
+  border-radius: 3px;
+  background: #ebebeb;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.slider:hover {
+  background: #ddd;
+}
+
+/* The "thumb" (the circle handle) for Chrome, Safari, Opera */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #2196F3; /* nicer color, a shade of blue */
+  border: 2px solid #fff;
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #1876d2; /* darker shade on hover */
+}
+
+/* For Firefox */
+.slider::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #2196F3;
+  border: 2px solid #fff;
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+  cursor: pointer;
+}

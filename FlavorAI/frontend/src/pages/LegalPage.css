@@ -1,0 +1,48 @@
+/* LegalPage.css */
+
+/* Outer container, similar to .recommendations-content */
+.legal-container {
+    background-color: #E8705B; /* same coral/orange as your Recommendations box */
+    margin: 120px auto 80px;   /* space under header, above footer */
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 16px;       /* nice rounded corners */
+    text-align: center;        /* center the title text */
+  }
+  
+  /* Title styling (similar to .recommendations-title) */
+  .legal-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: black; /* text stands out on coral background */
+  }
+  
+  /* The white “card” for the text (similar to the recommendation bubble) */
+  .legal-content-box {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 0 auto;
+    text-align: left; 
+    color: #333;
+    line-height: 1.6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* For the actual text block, especially if you’re using <pre> for docs */
+  .legal-content-box pre {
+    white-space: pre-wrap;
+    margin: 0;
+  }
+  
+  @media screen and (max-width: 600px) {
+    .legal-container {
+      width: 90%;
+      padding: 15px;
+    }
+    .legal-title {
+      font-size: 1.8rem;
+    }
+  }
+  

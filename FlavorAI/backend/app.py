@@ -15,8 +15,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 key_dir = os.path.abspath(os.path.join(current_dir, ".."))
 if key_dir not in sys.path:
     sys.path.insert(0, key_dir)
-
-# Replace these with your own references or environment-based imports
 from APIkey import othersapi_key, geminiapi_key
 
 # Create a Gemini client for flavor profile generation
@@ -223,7 +221,7 @@ def generate_flavor_profiles(restaurants):
 ###############################################################################
 # 5. Generating Restaurant Recommendations
 ###############################################################################
-def generate_recommendations(user_profile, restaurants, tried_foods, n=3):
+def generate_recommendations(user_profile, restaurants, tried_foods, n):
     """
     Filters out:
       - Restaurants the user has already tried,
@@ -244,7 +242,7 @@ def generate_recommendations(user_profile, restaurants, tried_foods, n=3):
     for r in filtered:
         flavor = r.get("flavor_profile", {})
         records.append({
-            "restaurant_id": r.get("id"),
+            "restaurant_id": r.get("place_id"),
             "name": r.get("name"),
             "vicinity": r.get("vicinity"),
             "salty": flavor.get("salty", 0),

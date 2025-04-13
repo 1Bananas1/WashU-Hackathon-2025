@@ -1,37 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
-import API from '../services/api'; // If you want to call your backend
+import { Link } from 'react-router-dom';
+import API from '../services/api';
 import './LoginPage.css';
 import logo from '../assets/The_chef_man.png'; // Use actual logo
 
 const LoginPage = () => {
-  const auth = getAuth();
-  const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Example: handle sign-in
   const handleSignInWithGoogle = async () => {
+    // Development bypass: if in development, skip real auth.
+    // You can check process.env.NODE_ENV or a custom flag, for example:
+    if (process.env.NODE_ENV === 'development') {
+      const testUserId = "user123";
+      console.log("Development bypass activated. Using test user:", testUserId);
+      localStorage.setItem('userId', testUserId);
+      // Optionally, you might prefill test profile data on the backend.
+      navigate('/');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage("");
+
     try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("Sign-in successful!", user);
 
-      // Suppose you want to store user in localStorage
+      // Store user ID in local storage
       localStorage.setItem('userId', user.uid);
 
-      // Possibly inform your Flask backend that user exists (optional)
-      // e.g. Onboard them if needed
-      // await API.post(`/onboarding/${user.uid}`, {
-      //   favorites: ["Pizza", "Sushi"], // or gather from a form
-      //   dietary_restrictions: [],
-      //   allergies: []
-      // });
+      // Optionally call your backend to onboard the user
+      /*
+      await API.post(`/onboarding/${user.uid}`, {
+        favorites: [], // or get from user input form
+        dietary_restrictions: [],
+        allergies: []
+      });
+      */
 
-      // Then navigate to "/"
       navigate('/');
     } catch (error) {
       console.error("Sign-in error:", error.message);
+      setErrorMessage("Failed to sign in with Google. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,16 +63,27 @@ const LoginPage = () => {
         <p className="tagline">
           Find Your Flavor – Recipes and Restaurants Tailored for You!
         </p>
-        <button className="google-signin-button" onClick={handleSignInWithGoogle}>
-          <img 
-            src="../src/assets/Google__G__logo.svg.webp"
-            alt="Google Logo" 
-            className="google-logo" 
-          />
-          Login with Google
+        {errorMessage && (
+          <div className="error-message">{errorMessage}</div>
+        )}
+        <button
+          className="google-signin-button"
+          onClick={handleSignInWithGoogle}
+          disabled={loading}
+        >
+          {loading ? "Signing in..." : (
+            <>
+              <img 
+                src="../src/assets/Google__G__logo.svg.webp"
+                alt="Google Logo" 
+                className="google-logo" 
+              />
+              Login with Google
+            </>
+          )}
         </button>
         <p className="terms-and-conditions">
-          Terms and Conditions
+          <Link to="/legal">Terms & Privacy</Link>
         </p>
       </div>
     </div>
