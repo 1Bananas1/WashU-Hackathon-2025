@@ -6,15 +6,17 @@ import sys
 import os
 from collections import defaultdict
 
-# Load API key
-api_key_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../..", "APIkey.py"))
-spec = importlib.util.spec_from_file_location("APIkey", api_key_path)
-api_key_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(api_key_module)
+# Because app.py is in /FlavorAI/backend, and APIkey.py is in /FlavorAI,
+# we go one level up to find APIkey.py
+current_dir = os.path.dirname(os.path.abspath(__file__))
+key_dir = os.path.abspath(os.path.join(current_dir, "..", ".."))
+if key_dir not in sys.path:
+    sys.path.insert(0, key_dir)
 
-API_KEY = api_key_module.otherAPI_key
+# Replace these with your own references or environment-based imports
+from APIkey import othersapi_key
 
-# Dictionary mapping restaurant types to cuisines
+# Example dictionary mapping
 CUISINE_MAPPING = {
     "mexican_restaurant": "Mexican",
     "italian_restaurant": "Italian",
@@ -38,31 +40,28 @@ CUISINE_MAPPING = {
     "sushi_restaurant": "Japanese"
 }
 
-# Specify the path to your location history file
-location_history_path = os.path.join("/flavorAI/sampledata", "location-history.json")
-
-# Alternative paths to try if the main one doesn't work
-alternative_paths = [
-    os.path.join(os.getcwd(), "flavorAI", "sampledata", "location-history.json"),
-    os.path.join(os.getcwd(), "sampledata", "location-history.json"),
-    os.path.join(os.getcwd(), "location-history.json"),
-    "flavorAI/sampledata/location-history.json",
-    "sampledata/location-history.json",
+# location_history.json is assumed to be in /FlavorAI/backend/sampledata
+location_history_path = os.path.join(
+    os.path.dirname(__file__),  # /FlavorAI/backend/utils
+    "..",                       # /FlavorAI/backend
+    "sampledata",
     "location-history.json"
-]
+)
 
-# Set up output directory
-OUTPUT_DIR = os.path.join(os.getcwd(), "FlavorAI", "backend", "personaldata")
+# OUTPUT_DIR is /FlavorAI/backend/personaldata
+OUTPUT_DIR = os.path.join(
+    os.path.dirname(__file__),  # /FlavorAI/backend/utils
+    "..",                       # /FlavorAI/backend
+    "personaldata"
+)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 print(f"Output directory set to: {OUTPUT_DIR}")
 
-# Try to load the JSON location history
 data = None
 loaded_path = None
 
-# Try the primary path first
 try:
-    print(f"Trying to load location history from primary path: {location_history_path}")
+    print(f"Trying to load location history from: {location_history_path}")
     print(f"Current working directory: {os.getcwd()}")
     if os.path.exists(location_history_path):
         with open(location_history_path, "r") as f:
@@ -70,71 +69,10 @@ try:
         loaded_path = location_history_path
         print(f"Successfully loaded location history with {len(data)} entries")
     else:
-        print(f"Primary path does not exist")
+        print("location-history.json not found at the expected path.")
 except Exception as e:
-    print(f"Error with primary path: {e}")
+    print(f"Error loading location history: {e}")
 
-# Try alternative paths if primary path fails
-if data is None:
-    for alt_path in alternative_paths:
-        try:
-            print(f"Trying alternative path: {alt_path}")
-            if os.path.exists(alt_path):
-                with open(alt_path, "r") as f:
-                    data = json.load(f)
-                loaded_path = alt_path
-                print(f"Successfully loaded location history from {alt_path} with {len(data)} entries")
-                break
-            else:
-                print(f"Path doesn't exist: {alt_path}")
-        except Exception as e:
-            print(f"Error with {alt_path}: {e}")
-
-# If all paths failed, provide debugging information
-if data is None:
-    print("ERROR: Could not find or load location-history.json from any path")
-    print("Checking directories structure for debugging...")
-    
-    # List current directory contents
-    print("\nFiles in current directory:")
-    try:
-        files = os.listdir(".")
-        for file in files:
-            print(f"  - {file}")
-    except Exception as e:
-        print(f"  Error listing current directory: {e}")
-    
-    # Check parent directory if needed
-    print("\nFiles in parent directory:")
-    try:
-        files = os.listdir("..")
-        for file in files:
-            print(f"  - {file}")
-    except Exception as e:
-        print(f"  Error listing parent directory: {e}")
-        
-    # Check if flavorAI directory exists
-    if os.path.exists("flavorAI"):
-        print("\nFiles in flavorAI directory:")
-        try:
-            files = os.listdir("flavorAI")
-            for file in files:
-                print(f"  - {file}")
-        except Exception as e:
-            print(f"  Error listing flavorAI directory: {e}")
-            
-    # Check if sampledata directory exists in current or parent
-    for sample_dir in ["sampledata", "flavorAI/sampledata", "../sampledata"]:
-        if os.path.exists(sample_dir):
-            print(f"\nFiles in {sample_dir} directory:")
-            try:
-                files = os.listdir(sample_dir)
-                for file in files:
-                    print(f"  - {file}")
-            except Exception as e:
-                print(f"  Error listing {sample_dir} directory: {e}")
-    
-    sys.exit(1)
 
 # Dictionary to store restaurant visits (simplified to just count)
 restaurant_visits = defaultdict(lambda: {
@@ -160,7 +98,7 @@ print(f"Found {len(place_ids)} unique place IDs to analyze")
 
 # Function to get place details
 def get_place_details(place_id):
-    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={API_KEY}"
+    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={othersapi_key}"
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
