@@ -6,7 +6,7 @@ Technical:
 
 Backend - Gemini API, Google Maps API, Python
 
-Frontend - React.js, Flask
+Frontend - React.js, CSS, Flask
 
 To run:
 
