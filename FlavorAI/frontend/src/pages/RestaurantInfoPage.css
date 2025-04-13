@@ -1,0 +1,70 @@
+.restaurant-info-page {
+  padding: 20px;
+  /* background-color: #f0f0f0; <- Removed */
+  min-height: 100vh; /* Keep min-height if needed for layout */
+  width: 100%; /* Ensure it takes full width */
+  box-sizing: border-box; /* Include padding in width/height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.restaurant-info-page h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.restaurant-info-page h3 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 1.1rem;
+  width: 100%;
+  text-align: left;
+}
+
+.reviews-section,
+.menus-section,
+.recommended-items,
+.nutrition-info {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.review-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.menu-category {
+  margin-bottom: 15px;
+}
+
+.menu-category h4 {
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.menu-category ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.menu-category li {
+  padding: 5px 0;
+}
+
+.recommended-items li {
+  padding: 5px 0;
+}
+
+.nutrition-item {
+  margin-bottom: 10px;
+}
+
+.nutrition-item h4 {
+  margin-bottom: 3px;
+  font-size: 1rem;
+  color: #333;
+}

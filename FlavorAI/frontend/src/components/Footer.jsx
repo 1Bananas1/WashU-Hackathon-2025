@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react'; // Removed useEffect as it's not used
 import './Footer.css';
+import mapLogo from '../assets/map_logo.png'; // Corrected map logo image import
 
 const Footer = () => {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
@@ -42,7 +43,10 @@ const Footer = () => {
   };
 
   const handleClick = () => {
-    setIsMapExpanded(!isMapExpanded);
+    // Allow click to toggle only if not expanded, to prevent accidental clicks on map
+    if (!isMapExpanded) {
+      setIsMapExpanded(true);
+    }
   };
 
   return (
@@ -52,13 +56,11 @@ const Footer = () => {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onClick={handleClick}
+      // Removed onClick from the footer itself, handle click on the icon/indicator
     >
       <div className="footer-curve"></div>
-      <div className="location-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-        </svg>
+      <div className="location-icon-container" onClick={handleClick}> {/* Make container clickable */}
+        <img src={mapLogo} alt="Map Icon" className="location-icon-img" />
       </div>
       
       {/* Map content that appears when expanded */}
@@ -66,7 +68,7 @@ const Footer = () => {
         <div className="map-header">
           <h3>Nearby Recommendations</h3>
           <div className="map-close" onClick={(e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Prevent footer click handler
             setIsMapExpanded(false);
           }}>×</div>
         </div>
@@ -79,8 +81,9 @@ const Footer = () => {
                 key={pin.id} 
                 className="map-pin"
                 style={{ 
-                  left: `${(pin.lng + 90.21) * 1000 % 100}%`, 
-                  top: `${(pin.lat - 38.62) * 1000 % 100}%` 
+                  // Basic positioning for demo, replace with actual map coordinates
+                  left: `${(pin.lng + 90.21) * 1500 % 90 + 5}%`, 
+                  top: `${(pin.lat - 38.62) * 1500 % 90 + 5}%` 
                 }}
                 title={pin.name}
               >
@@ -93,7 +96,7 @@ const Footer = () => {
       </div>
       
       {/* Swipe indicator */}
-      <div className="swipe-indicator">
+      <div className="swipe-indicator" onClick={handleClick}> {/* Make indicator clickable */}
         <div className="swipe-line"></div>
         <div className="swipe-text">{isMapExpanded ? 'Swipe down to close' : 'Swipe up for map'}</div>
       </div>

@@ -1,85 +1,133 @@
 .recommendations-container {
   width: 100%;
-  height: 100%;
+  /* Removed height: 100% to allow content to determine height */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* Removed justify-content: center */
   align-items: center;
-  padding-top: 60px; /* To account for the fixed header */
-  padding-bottom: 100px; /* To account for the footer */
+  padding-top: 80px; /* Increased padding for new header */
+  padding-bottom: 120px; /* Increased padding for footer */
+  background-color: #fbeedb; /* Correct: Page background is beige */
 }
 
 .recommendations-content {
   width: 100%;
-  max-width: 500px;
-  height: 100%;
-  background-color: #5a7561; /* Dark green color from the image */
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px; /* Or adjust as needed */
+  background-color: #E8705B;
+  color: #333; /* Dark text color */
+  text-align: left; /* Align text left */
+  padding: 1.5rem; /* Adjusted padding */
+  border-radius: 20px; /* Rounded corners */
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); <- Removed */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  overflow-y: auto;
+  align-items: stretch; /* Stretch children to full width */
+  overflow-y: visible; /* Allow content to overflow if needed */
+  margin: 0 1rem; /* Add some horizontal margin */
 }
 
-.recommendations-content h1 {
+.recommendations-title { /* Renamed from h1 for specificity */
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
+  font-weight: bold;
+  color: black; /* Black title text */
+  text-align: center; /* Center the title */
 }
 
 .recommendation-bubbles {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 0 0.5rem;
+  gap: 1.5rem; /* Increased gap */
+  padding: 0; /* Remove padding */
+}
+
+.recommendation-bubble-link {
+  text-decoration: none;
+  color: inherit;
+  display: block; /* Make link a block element */
 }
 
 .recommendation-bubble {
-  background-color: white;
+  background-color: #FFF7ED; /* Light beige background for bubbles */
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   color: #333;
   display: flex;
   flex-direction: column;
+  padding: 1rem; /* Add padding inside the bubble */
+  width: auto; /* Let it take width from parent */
 }
 
 .bubble-header {
-  padding: 0.8rem;
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #eee;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Align items to the top */
+  padding: 0; /* Remove padding */
+  background-color: transparent; /* Remove background */
+  border-bottom: none; /* Remove border */
+  margin-bottom: 0.5rem; /* Space below header */
 }
 
 .bubble-title {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.4rem; /* Larger title */
+  font-weight: bold;
   color: #333;
+  text-align: left;
 }
+
+.bubble-rating {
+  font-size: 1.2rem; /* Larger stars */
+  color: #000; /* Black stars */
+  font-weight: bold;
+  white-space: nowrap; /* Prevent stars from wrapping */
+}
+
+.star {
+  margin-left: 2px;
+}
+
+/* Basic star styling - adjust as needed */
+.star.filled {
+  color: black;
+}
+.star.empty {
+  color: #ccc;
+}
+/* Add styles for half stars if needed */
+/* .star.half { ... } */
 
 .bubble-content {
-  padding: 1rem;
-}
-
-.bubble-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 0; /* Remove padding */
+  text-align: left;
 }
 
 .bubble-distance {
   font-size: 0.9rem;
-  color: #666;
+  color: #555; /* Darker gray */
+  margin-bottom: 0.5rem; /* Space below distance */
 }
 
-.bubble-rating {
-  font-size: 0.9rem;
-  color: #f8b400;
-  font-weight: 600;
+.bubble-description {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 0.8rem; /* Space below description */
+}
+
+.bubble-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.bubble-tag {
+  background-color: #333; /* Dark background for tags */
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px; /* Pill shape */
+  font-size: 0.8rem;
+  font-weight: 500;
 }
