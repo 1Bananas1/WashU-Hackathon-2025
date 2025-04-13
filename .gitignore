@@ -1,3 +1,7 @@
 .venv
 /FlavorAI/APIkey.py
 /FlavorAI/__pycache__
+sampledata/*
+!sampledata/.gitignore
+FlavorAI/backend/*
+!FlavorAI/backend/.gitignore
