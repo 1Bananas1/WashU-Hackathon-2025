@@ -221,7 +221,7 @@ def generate_flavor_profiles(restaurants):
 ###############################################################################
 # 5. Generating Restaurant Recommendations
 ###############################################################################
-def generate_recommendations(user_profile, restaurants, tried_foods, n=3):
+def generate_recommendations(user_profile, restaurants, tried_foods, n):
     """
     Filters out:
       - Restaurants the user has already tried,

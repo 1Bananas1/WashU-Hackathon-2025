@@ -60,29 +60,23 @@ def api_find_restaurants():
 
 @app.route("/recommendations/<user_id>", methods=["POST"])
 def api_recommendations(user_id):
-    """
-    POST body example:
-    {
-      "lat": 34.05,
-      "lon": -118.24,
-      "radius_value": 2,
-      "radius_unit": "miles",
-      "triedFoods": ["Burger Bonanza"]
-    }
-    """
     data = request.get_json(force=True)
     lat = data.get("lat", 34.052235)
     lon = data.get("lon", -118.243683)
     radius_value = data.get("radius_value", 2)
     radius_unit = data.get("radius_unit", "miles")
     tried = data.get("triedFoods", [])
+    n = data.get("n", 5)  # default to 5 if not provided
 
     user_profile = get_user_profile(user_id)
     if user_profile is None:
         return jsonify({"error": f"No profile for user {user_id}"}), 404
 
+    # (Find restaurants using lat/lon, radius_value, etc.)
     restaurants = find_nearby_restaurants(lat, lon, radius_value, radius_unit)
-    recs_df = generate_recommendations(user_profile, restaurants, tried, n=3)
+
+    # Pass the 'n' to generate_recommendations
+    recs_df = generate_recommendations(user_profile, restaurants, tried, n)
     return jsonify({"recommendations": recs_df.to_dict(orient="records")})
 
 @app.route("/feedback/<user_id>", methods=["POST"])
