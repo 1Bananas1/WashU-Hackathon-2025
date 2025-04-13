@@ -7,7 +7,6 @@ import json
 from google import genai
 from google.genai import types
 from plyer import gps
-from flask import Flask, request, jsonify
 
 ###############################################################################
 # Setup & Configuration
@@ -17,25 +16,41 @@ key_dir = os.path.abspath(os.path.join(current_dir, ".."))
 if key_dir not in sys.path:
     sys.path.insert(0, key_dir)
 
+# Replace these with your own references or environment-based imports
 from APIkey import othersapi_key, geminiapi_key
 
+# Create a Gemini client for flavor profile generation
 client = genai.Client(api_key=geminiapi_key)
+
+# Always show all columns in Pandas DataFrames
 pd.set_option("display.max_columns", None)
 
-gps_location = {}
-RESTAURANT_COUNT = 20
-
-app = Flask(__name__)
+# Globals
+gps_location = {}       # Dictionary to store the latest device GPS location
+RESTAURANT_COUNT = 20   # Maximum number of restaurants returned by Google Maps
 
 ###############################################################################
 # 1. GPS Location Acquisition
 ###############################################################################
 def on_location(**kwargs):
+    """
+    Callback function for Plyer GPS updates. Stores new location data in gps_location.
+    """
     global gps_location
     gps_location = kwargs
     print("GPS update received:", kwargs)
 
 def get_geolocation(timeout=10):
+    """
+    Attempts to acquire latitude & longitude from the device's GPS via Plyer.
+    If not implemented or if the timeout is reached, returns (None, None).
+
+    Args:
+        timeout (int): Seconds to wait for a GPS update
+
+    Returns:
+        (float, float) | (None, None): The (latitude, longitude) or None if unavailable
+    """
     try:
         gps.configure(on_location=on_location)
         gps.start(minTime=1000, minDistance=0)
@@ -47,6 +62,7 @@ def get_geolocation(timeout=10):
     start_time = time.time()
     while ('lat' not in gps_location or 'lon' not in gps_location) and (time.time() - start_time < timeout):
         time.sleep(1)
+
     gps.stop()
 
     if 'lat' in gps_location and 'lon' in gps_location:
@@ -59,6 +75,19 @@ def get_geolocation(timeout=10):
 # 2. Google Maps Search for Nearby Restaurants
 ###############################################################################
 def find_nearby_restaurants(lat, lon, radius_value, radius_unit):
+    """
+    Queries the Google Maps Places API for restaurants near (lat, lon),
+    limited by the radius given in miles or kilometers.
+
+    Args:
+        lat (float): Latitude of current location
+        lon (float): Longitude of current location
+        radius_value (float): Numeric radius in the provided unit
+        radius_unit (str): 'miles' or 'kilometers'
+
+    Returns:
+        list: Up to RESTAURANT_COUNT dictionaries describing nearby restaurants
+    """
     if radius_unit.lower() in ['kilometers', 'km']:
         radius_meters = radius_value * 1000
     elif radius_unit.lower() in ['miles', 'mi']:
@@ -87,6 +116,15 @@ def find_nearby_restaurants(lat, lon, radius_value, radius_unit):
 # 3. Google Places: Get Reviews
 ###############################################################################
 def get_reviews(restaurant_id):
+    """
+    Retrieves reviews for a given restaurant ID via the Google Places Details API.
+
+    Args:
+        restaurant_id (str): The Google Place ID
+
+    Returns:
+        list of dict: Each with 'text' and 'rating' for the review
+    """
     endpoint = "https://maps.googleapis.com/maps/api/place/details/json"
     params = {
         "placeid": restaurant_id,
@@ -110,6 +148,15 @@ def get_reviews(restaurant_id):
 # 4. Gemini: Single Function Call for Flavor Profiles
 ###############################################################################
 def generate_flavor_profiles(restaurants):
+    """
+    Makes ONE aggregated call to Gemini to retrieve flavor profiles for all restaurants at once.
+
+    Args:
+        restaurants (list): Each element is a dict with at least a 'name' key.
+
+    Returns:
+        list: The original list with each dict having an added 'flavor_profile' field.
+    """
     generate_profiles_function = {
         "name": "generate_flavor_profiles",
         "description": (
@@ -177,6 +224,16 @@ def generate_flavor_profiles(restaurants):
 # 5. Generating Restaurant Recommendations
 ###############################################################################
 def generate_recommendations(user_profile, restaurants, tried_foods, n=3):
+    """
+    Filters out:
+      - Restaurants the user has already tried,
+      - Restaurants conflicting with user's dietary restrictions,
+      - Restaurants that are currently not open,
+    then uses a single Gemini call to get flavor profiles for the filtered restaurants.
+
+    Finally, it computes a similarity score for each restaurant vs. the user's tastes,
+    and returns the top n recommendations as a DataFrame.
+    """
     filtered = [r for r in restaurants if r.get("name", "").lower() not in [t.lower() for t in tried_foods]]
     if "gluten-free" in user_profile.get("dietary_restrictions", []):
         filtered = [r for r in filtered if "burger" not in r.get("name", "").lower()]
@@ -216,6 +273,11 @@ def generate_recommendations(user_profile, restaurants, tried_foods, n=3):
 # 6. Push Notification & Feedback
 ###############################################################################
 def push_feedback(user_profile, restaurant, user_id):
+    """
+    Simulates a push notification for feedback on a recommended restaurant.
+    The user enters a favorability score (0-1) and comment (e.g. "too salty").
+    Then calls update_user_profile(...) with the user ID.
+    """
     print(f"\nPush notification: Rate your experience at {restaurant['name']}.")
     favorability = float(input("Enter favorability (0-1): "))
     comment = input("Enter feedback comment (e.g. 'too salty'): ")
@@ -267,7 +329,6 @@ def update_user_profile(user_profile, favorability, comment, user_id):
 
     try:
         df = pd.read_csv(csv_file)
-        # Ensure columns for dietary_restrictions and allergies are strings
         df["dietary_restrictions"] = df["dietary_restrictions"].fillna("").astype(str)
         df["allergies"] = df["allergies"].fillna("").astype(str)
 
@@ -289,13 +350,22 @@ def update_user_profile(user_profile, favorability, comment, user_id):
 # 8. Create new userdata.csv for onboarding based on favorite foods
 ###############################################################################
 def build_onboarding_profile(user_id, favorites_df):
-    # collects user favorites, calls gemini to build tastes, prompts for diet/allergies
+    """
+    Takes a user_id and a list (DataFrame) of the user's favorite foods for onboarding.
+    Calls Gemini once, expecting a single function call ("build_user_taste_profile")
+    that returns:
+      - salty, umami, spicy, sweet, sour (floats in [0,1])
+      - texture_preferences (array of descriptive strings)
+    Then prompts the user for their dietary restrictions and allergies (one by one),
+    storing them in small Pandas DataFrames. Finally, it writes out the new user
+    profile to personaldata/<user_id>_profile.csv for future use.
+    """
     build_profile_function = {
         "name": "build_user_taste_profile",
         "description": (
             "Create a JSON object with an overall taste profile for this user, "
             "including keys: 'salty', 'umami', 'spicy', 'sweet', 'sour' (floats in [0,1]) "
-            "and 'texture_preferences' (array of descriptive strings)."
+            "and 'texture_preferences' (array of strings)."
         ),
         "parameters": {
             "type": "object",
@@ -364,7 +434,6 @@ def build_onboarding_profile(user_id, favorites_df):
         "allergies": []
     }
 
-    # prompt user for dietary restrictions
     num_dietary = int(input("How many dietary restrictions do you have? (0=none): "))
     dietary_data = []
     for i in range(num_dietary):
@@ -372,7 +441,6 @@ def build_onboarding_profile(user_id, favorites_df):
         dietary_data.append({"dietary_restriction": restriction})
     dietary_df = pd.DataFrame(dietary_data)
 
-    # prompt user for allergies
     num_allergies = int(input("How many allergies do you have? (0=none): "))
     allergies_data = []
     for i in range(num_allergies):
@@ -405,49 +473,3 @@ def build_onboarding_profile(user_id, favorites_df):
     print(f"Created user profile at '{csv_file}'.")
 
     return user_profile
-
-###############################################################################
-# Main
-###############################################################################
-def main():
-    example_user_id = "user123"
-
-    # user favorites
-    sample_favorites = pd.DataFrame({
-        "food_name": ["Pizza", "Ice Cream", "Sushi", "Tacos"]
-    })
-    print(f"Building onboarding profile for user: {example_user_id}")
-    new_profile = build_onboarding_profile(user_id=example_user_id, favorites_df=sample_favorites)
-    print("Onboarding profile created:\n", new_profile, "\n")
-
-    # Acquire device location (or fallback)
-    print("Attempting to retrieve device GPS location...")
-    lat, lon = get_geolocation(timeout=5)
-    if lat is None or lon is None:
-        print("GPS unavailable; using fallback: New York coords.")
-        lat, lon = 40.7128, -74
-
-    restaurants = find_nearby_restaurants(lat, lon, radius_value=2, radius_unit="miles")
-    print(f"Found {len(restaurants)} restaurants near ({lat}, {lon}).")
-
-    user_profile = get_user_profile(example_user_id)
-    if user_profile is None:
-        print("No user profile found.")
-        return
-
-    tried_restaurants = ["Burger Bonanza", "Old Italian Place"]
-
-    print("\nGenerating recommendations...")
-    recommendations_df = generate_recommendations(user_profile, restaurants, tried_restaurants, n=3)
-    print("\nTop Recommended Restaurants:")
-    print(recommendations_df)
-
-    if not recommendations_df.empty:
-        top_rec = recommendations_df.iloc[0].to_dict()
-        print("\nSimulating user feedback on top recommendation:")
-        push_feedback(user_profile, top_rec, example_user_id)
-
-    print("\nEnd of main demonstration.")
-
-if __name__ == "__main__":
-    main()
