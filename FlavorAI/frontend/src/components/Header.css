@@ -2,32 +2,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0.8rem 1rem; /* Adjusted padding */
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
+  background-color: #fbeedb; /* Updated background color */
+  box-shadow: none; /* Remove shadow if not needed */
 }
 
 /* Toggle Container */
 .toggle-container {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center; /* Center items vertically */
 }
 
-.toggle-text {
-  font-size: 0.7rem;
-  margin-top: 0.2rem;
-  color: #333;
-  font-weight: 500;
-}
-
-/* Toggle Switch Styles */
+/* Toggle Switch Styles - Updated for new design */
 .toggle-switch {
   position: relative;
   display: inline-block;
+  margin-top: -41.5px;
+  width: 70px; /* Increased width */
+  height: 34px; /* Increased height */
 }
 
 .toggle-input {
@@ -37,59 +34,86 @@
 }
 
 .toggle-label {
-  display: block;
-  width: 50px;
-  height: 26px;
-  background-color: #ccc;
-  border-radius: 26px;
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Center text vertically */
+  justify-content: space-between; /* Space out text and button */
+  width: 100%;
+  height: 100%;
+  background-color: #333; /* Dark background */
+  border-radius: 34px;
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
+  padding: 0 5px; /* Padding for text */
+  box-sizing: border-box;
+}
+
+.toggle-text-inside {
+  font-size: 0.7rem;
+  color: white;
+  font-weight: bold;
+  position: absolute;
+  left: 30px; /* Position text */
+  transition: left 0.3s;
+}
+
+.toggle-input:checked + .toggle-label .toggle-text-inside {
+  left: 5px; /* Adjust text position when toggled */
 }
 
 .toggle-button {
   position: absolute;
   content: "";
-  height: 22px;
-  width: 22px;
-  left: 2px;
-  bottom: 2px;
+  height: 28px; /* Larger button */
+  width: 28px;
   background-color: white;
   border-radius: 50%;
   transition: transform 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .toggle-input:checked + .toggle-label {
-  background-color: #2196F3;
+  background-color: #5a7561; /* Green background when checked */
 }
 
 .toggle-input:checked + .toggle-label .toggle-button {
-  transform: translateX(24px);
+  transform: translateX(36px); /* Adjusted translation */
 }
 
-/* Hamburger Menu Styles */
-.hamburger-menu {
+/* Header Logo */
+.header-logo-container {
+  position: absolute;
+  margin-top:18px; 
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 30px;
-  height: 20px;
+  align-items: center;
+}
+
+.header-logo {
+  scale:2.5;
+  height: 30px; /* Adjust logo size */
+  width: auto;
+}
+
+/* Settings Icon Styles */
+.settings-icon {
   cursor: pointer;
-  z-index: 102;
+  z-index: 102; /* Ensure it's above overlay */
 }
 
-.hamburger-line {
-  width: 100%;
-  height: 3px;
-  background-color: black;
-  border-radius: 3px;
+.settings-icon svg {
+  width: 28px; /* Adjust icon size */
+  height: 28px;
+  stroke: #333; /* Icon color */
 }
 
-/* Sidebar Styles */
+
+/* Sidebar Styles (Keep existing styles, ensure link styling is appropriate) */
 .sidebar {
   position: fixed;
   top: 0;
-  right: -250px;
+  right: -250px; /* Start off-screen */
   width: 250px;
   height: 100vh;
   background-color: white;
@@ -99,7 +123,7 @@
 }
 
 .sidebar.open {
-  right: 0;
+  right: 0; /* Slide in */
 }
 
 .sidebar-header {
@@ -117,17 +141,21 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  color: #555;
 }
 
 .sidebar-content {
-  padding: 1rem;
+  padding: 1rem 0; /* Adjust padding */
 }
 
 .sidebar-item {
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
+  padding: 1rem 1.5rem; /* Adjust padding */
   cursor: pointer;
   font-weight: 500;
+  text-decoration: none;
+  color: #333; /* Link color */
+  display: block;
+  transition: background-color 0.2s ease;
 }
 
 .sidebar-item:hover {
@@ -141,5 +169,10 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
-  z-index: 100;
+  z-index: 100; /* Below sidebar but above content */
+}
+
+/* Hide hamburger menu lines (replaced by settings icon) */
+.hamburger-line {
+  display: none;
 }

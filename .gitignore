@@ -7,3 +7,4 @@ FlavorAI/backend/*
 !FlavorAI/backend/.gitignore
 !FlavorAI/backend/appService.py
 FlavorAI/__pycache__
+

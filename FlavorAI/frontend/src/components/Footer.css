@@ -23,7 +23,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #cccccc; /* Light gray color from the image */
+  background-color: #000000; /* Black background */
   border-top-left-radius: 50% 80px;
   border-top-right-radius: 50% 80px;
   z-index: -1;
@@ -36,28 +36,34 @@
   height: 100%;
 }
 
-.location-icon {
-  width: 50px;
+/* Updated to style the img tag directly on the curve */
+.location-icon-container { 
+  width: 50px; /* Adjust size as needed */
   height: 50px;
-  background-color: white;
-  border-radius: 5px;
+  /* Removed background-color and box-shadow */
+  border-radius: 5px; /* Keep rounding if desired */
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1;
-  transition: transform 0.3s ease;
+  margin-top:50px;
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Added opacity transition */
+  cursor: pointer; /* Add cursor pointer */
+  position: relative; /* Needed for positioning */
+  top: -25px; /* Pull the icon up to sit on the curve */
 }
 
-.footer.expanded .location-icon {
-  transform: translateY(-30vh);
+.footer.expanded .location-icon-container {
+  transform: translateY(-30vh); /* Move up less drastically */
   opacity: 0;
+  pointer-events: none; /* Disable clicks when hidden */
 }
 
-.location-icon svg {
+.location-icon-img { /* Style for the image */
+  scale:3.5;
   width: 30px;
   height: 30px;
-  color: black;
+  object-fit: contain; /* Ensure image scales correctly */
 }
 
 /* Map container styles */
