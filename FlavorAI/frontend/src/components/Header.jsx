@@ -58,7 +58,8 @@ const Header = () => {
           <Link to="/" className="sidebar-item" onClick={toggleSidebar}>Main Menu</Link>
           <Link to="/profile" className="sidebar-item" onClick={toggleSidebar}>Profile</Link>
           <Link to="/settings" className="sidebar-item" onClick={toggleSidebar}>Settings</Link>
-          <Link to="/login" className="sidebar-item" onClick={toggleSidebar}>Login</Link> {/* Added Login link */}
+          <Link to="/login" className="sidebar-item" onClick={toggleSidebar}>Login</Link>
+          <Link to="/taste-profile" className="sidebar-item" onClick={toggleSidebar}>Taste Profile</Link>
         </div>
       </div>
 

@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 import pandas as pd
 import os
 
-# You said you keep your logic in app.py
 from app import *
 
 from flask_cors import CORS  # For cross-origin support

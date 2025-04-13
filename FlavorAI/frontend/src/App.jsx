@@ -25,6 +25,7 @@ const AppContent = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/restaurant/:id" element={<RestaurantInfoPage />} />
           <Route path="/recipe/:id" element={<RecipeInfoPage />} />
+          <Route path="/taste-profile" element={<TasteProfilePage />} />
         </Routes>
       </main>
       {!isLoginPage && <Footer />}
