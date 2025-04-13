@@ -349,17 +349,32 @@ def update_user_profile(user_profile, favorability, comment, user_id):
 ###############################################################################
 # 8. Create new userdata.csv for onboarding based on favorite foods
 ###############################################################################
-def build_onboarding_profile(user_id, favorites_df):
+def build_onboarding_profile(user_id, favorites_df, dietary_list=None, allergies_list=None):
     """
     Takes a user_id and a list (DataFrame) of the user's favorite foods for onboarding.
     Calls Gemini once, expecting a single function call ("build_user_taste_profile")
     that returns:
       - salty, umami, spicy, sweet, sour (floats in [0,1])
       - texture_preferences (array of descriptive strings)
-    Then prompts the user for their dietary restrictions and allergies (one by one),
-    storing them in small Pandas DataFrames. Finally, it writes out the new user
-    profile to personaldata/<user_id>_profile.csv for future use.
+
+    dietary_list and allergies_list are also provided as lists of strings
+    from the API call, instead of prompting interactively.
+
+    Then writes the new user profile to personaldata/<user_id>_profile.csv
+    for future use.
+
+    Args:
+        user_id (str): Unique identifier for the user.
+        favorites_df (pd.DataFrame): A DataFrame of user’s favorite foods, e.g. with a 'food_name' column.
+        dietary_list (list): A list of user-specified dietary restrictions (strings).
+        allergies_list (list): A list of user-specified allergies (strings).
+
+    Returns:
+        dict: The in-memory representation of the user’s newly created profile,
+              including taste values, texture preferences, dietary_restrictions, and allergies.
     """
+
+    # Prepare the Gemini function signature
     build_profile_function = {
         "name": "build_user_taste_profile",
         "description": (
@@ -383,6 +398,7 @@ def build_onboarding_profile(user_id, favorites_df):
         },
     }
 
+    # Build the prompt for Gemini
     prompt_lines = [
         "You are given a list of foods that a user loves. Please call the function "
         "'build_user_taste_profile' returning a JSON object named 'taste_profile' "
@@ -395,14 +411,19 @@ def build_onboarding_profile(user_id, favorites_df):
         prompt_lines.append(f"- {food_name}")
 
     prompt = "\n".join(prompt_lines)
+
+    # Create a "Tool" for Gemini's function calling
     build_profile_tool = types.Tool(function_declarations=[build_profile_function])
     config = types.GenerateContentConfig(tools=[build_profile_tool])
+
+    # Make a single Gemini call
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=prompt,
         config=config
     )
 
+    # Parse the Gemini response
     candidate = response.candidates[0]
     content_parts = candidate.content.parts
     fallback_profile = {
@@ -420,6 +441,7 @@ def build_onboarding_profile(user_id, favorites_df):
     else:
         print("No function call found. Using fallback profile.")
 
+    # Build the user profile dict
     user_profile = {
         "user_id": user_id,
         "favorite_tastes": {
@@ -430,29 +452,11 @@ def build_onboarding_profile(user_id, favorites_df):
             "sour":  taste_profile.get("sour", 0.5)
         },
         "texture_preferences": taste_profile.get("texture_preferences", ["varied"]),
-        "dietary_restrictions": [],
-        "allergies": []
+        "dietary_restrictions": dietary_list if dietary_list else [],
+        "allergies": allergies_list if allergies_list else []
     }
 
-    num_dietary = int(input("How many dietary restrictions do you have? (0=none): "))
-    dietary_data = []
-    for i in range(num_dietary):
-        restriction = input(f"Enter dietary restriction #{i+1}: ")
-        dietary_data.append({"dietary_restriction": restriction})
-    dietary_df = pd.DataFrame(dietary_data)
-
-    num_allergies = int(input("How many allergies do you have? (0=none): "))
-    allergies_data = []
-    for i in range(num_allergies):
-        allergy = input(f"Enter allergy #{i+1}: ")
-        allergies_data.append({"allergy": allergy})
-    allergies_df = pd.DataFrame(allergies_data)
-
-    if not dietary_df.empty:
-        user_profile["dietary_restrictions"] = dietary_df["dietary_restriction"].tolist()
-    if not allergies_df.empty:
-        user_profile["allergies"] = allergies_df["allergy"].tolist()
-
+    # Write user profile to personaldata/<user_id>_profile.csv
     os.makedirs("personaldata", exist_ok=True)
     csv_file = os.path.join("personaldata", f"{user_id}_profile.csv")
 
