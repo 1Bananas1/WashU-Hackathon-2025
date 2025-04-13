@@ -1,2 +1,4 @@
 .venv
 /FlavorAI/APIkey.py
+/FlavorAI/__pycache__
+
