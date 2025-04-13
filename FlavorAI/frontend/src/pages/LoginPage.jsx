@@ -1,61 +1,52 @@
+// pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import logo from '../assets/The_chef_man.png';
-import app from "../config/firebase"; // Import the Firebase app instance
 
-const LoginPage = () => {
+const LoginPage = ({ onLogin }) => {
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
-  const auth = getAuth(app); // Add this line to initialize auth
-  const provider = new GoogleAuthProvider();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Function to handle Google Sign-In
   const handleSignInWithGoogle = async () => {
+    setLoading(true);
+    setErrorMessage("");
+
     try {
-      setError(null); // Clear any previous errors
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      // Handle successful sign-in
       const user = result.user;
-      console.log("Sign-in with Google successful!", user);
-      navigate('/'); // Redirect to main app page after login
+      console.log("Sign-in successful!", user);
+
+      localStorage.setItem('userId', user.uid);
+      onLogin(user.uid);  // update global state via prop
+
+      // Navigate to home page (or force onboarding if first-time)
+      navigate('/');
     } catch (error) {
-      // Handle errors
-      console.error("Sign-in with Google error:", error.message);
-      setError(error.message);
+      console.error("Sign-in error:", error.message);
+      setErrorMessage("Failed to sign in with Google. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-page">
       <div className="login-content">
-        {/* Logo Section */}
         <div className="logo-container">
           <img src={logo} alt="FlavorAI Logo" className="login-logo" />
         </div>
-
-        {/* Tagline */}
-        <p className="tagline">
-          Find Your Flavor – Recipes and Restaurants Tailored for You!
-        </p>
-
-        {/* Error message display */}
-        {error && <p className="error-message">{error}</p>}
-
-        {/* Google Sign-in Button */}
-        <button className="google-signin-button" onClick={handleSignInWithGoogle}>
-          <img 
-            src="../src/assets/Google__G__logo.svg.webp"
-            alt="Google Logo" 
-            className="google-logo" 
-          />
-          Login with Google
+        <p className="tagline">Find Your Flavor – Recipes and Restaurants Tailored for You!</p>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        <button className="google-signin-button" onClick={handleSignInWithGoogle} disabled={loading}>
+          {loading ? "Signing in..." : "Login with Google"}
         </button>
-
-        {/* Terms and Conditions */}
         <p className="terms-and-conditions">
-          Terms and Conditions
+          <a href="/legal">Legal Documents</a>
         </p>
       </div>
     </div>
