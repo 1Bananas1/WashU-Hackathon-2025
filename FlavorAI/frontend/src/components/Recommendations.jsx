@@ -29,8 +29,8 @@ const Recommendations = () => {
       try {
         // We include 'n' in our POST body so the server can return exactly that many results
         const requestBody = {
-          lat: 47.4979,
-          lon: 19.0402,
+          lat: 38.6270,
+          lon: -90.1994,
           radius_value: radius,
           radius_unit: "miles",
           triedFoods: [],
