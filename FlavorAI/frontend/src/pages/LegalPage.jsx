@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './LegalPage.css';
+import Docs from '../../public/docs';
 
 const LegalPage = () => {
   const [docsText, setDocsText] = useState('');
@@ -19,7 +20,7 @@ const LegalPage = () => {
     <div className="legal-container">
       <h1 className="legal-title">Legal Documents</h1>
       <div className="legal-content-box">
-        <pre>{docsText}</pre>
+        <Docs></Docs>
       </div>
     </div>
   );
