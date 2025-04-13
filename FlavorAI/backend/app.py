@@ -19,6 +19,9 @@ from APIkey import othersapi_key, geminiapi_key
 # Create a single client for Gemini calls, using your geminiapi_key
 client = genai.Client(api_key=geminiapi_key)
 
+# force Pandas to display max columns always
+pd.set_option("display.max_columns", None)
+
 # Global variables
 gps_location = {}       # Dictionary for storing device GPS location
 RESTAURANT_COUNT = 20   # Number of nearby restaurants to return
@@ -394,7 +397,6 @@ def update_user_profile(user_profile, favorability, comment):
     except Exception as e:
         print("Error updating CSV:", e)
 
-
 # ---------------------
 # Main Driver Function
 # ---------------------
@@ -429,7 +431,6 @@ def main():
         top_rec = recommendations_df.iloc[0].to_dict()
         print("\nSimulating feedback for top recommendation:")
         push_feedback(user_profile, top_rec)
-
 
 if __name__ == "__main__":
     main()
