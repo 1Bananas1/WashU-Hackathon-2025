@@ -1,154 +1,55 @@
-import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import Select from 'react-select';
+import React from 'react';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import './LoginPage.css';
+import logo from '../assets/The_chef_man.png'; // Use the actual logo
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [foodPreferences, setFoodPreferences] = useState([]);
-  const [allergies, setAllergies] = useState('');
-  const [timelineData, setTimelineData] = useState(null);
-  const [error, setError] = useState('');
+  const auth = getAuth(); // Initialize Firebase Auth
+  const provider = new GoogleAuthProvider(); // Google Auth Provider
 
-  const auth = getAuth();
-  const provider = new GoogleAuthProvider();
-
-  const foodOptions = [
-    { value: 'italian', label: 'Italian' },
-    { value: 'mexican', label: 'Mexican' },
-    { value: 'chinese', label: 'Chinese' },
-    { value: 'american', label: 'American' },
-    { value: 'indian', label: 'Indian' },
-    { value: 'japanese', label: 'Japanese' },
-    { value: 'thai', label: 'Thai' },
-    { value: 'french', label: 'French' },
-    { value: 'korean', label: 'Korean' },
-    { value: 'vietnamese', label: 'Vietnamese' },
-  ];
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleFoodPreferencesChange = (selectedOptions) => {
-    setFoodPreferences(selectedOptions);
-  };
-
-  const handleAllergiesChange = (e) => {
-    setAllergies(e.target.value);
-  };
-
-  const handleTimelineUpload = (e) => {
-    const file = e.target.files[0];
-    // Implement file reading and processing here
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setTimelineData(e.target.result);
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  const handleSignIn = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Handle successful sign-in (e.g., redirect to profile page)
-      console.log("Sign-in successful!");
-      setError('');
-    } catch (error) {
-      setError(error.message);
-      console.error("Sign-in error:", error.message);
-    }
-  };
-
-  const handleSignUp = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      // Handle successful sign-up (e.g., redirect to profile page)
-      console.log("Sign-up successful!");
-      setError('');
-    } catch (error) {
-      setError(error.message);
-      console.error("Sign-up error:", error.message);
-    }
-  };
-
+  // Function to handle Google Sign-In
   const handleSignInWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
-      // The signed-in user info.
+      // Handle successful sign-in
       const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
-      console.log("Sign-in with Google successful!", user, token);
-      setError('');
+      console.log("Sign-in with Google successful!", user);
+      // TODO: Redirect user or update app state upon successful login
     } catch (error) {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
-      setError(errorMessage);
-      console.error("Sign-in with Google error:", errorCode, errorMessage, email, credential);
+      // Handle errors
+      console.error("Sign-in with Google error:", error.message);
+      // TODO: Display user-friendly error message
     }
   };
 
   return (
     <div className="login-page">
-      <div className="login-form">
-        <h2>Login / Sign Up</h2>
-        {error && <p className="error-message">{error}</p>}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={handleEmailChange}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={handlePasswordChange}
-        />
-        <button onClick={handleSignIn}>Sign In</button>
-        <button onClick={handleSignUp}>Sign Up</button>
-        <button onClick={handleSignInWithGoogle}>Sign in with Gmail</button>
+      <div className="login-content">
+        {/* Logo Section */}
+        <div className="logo-container">
+          <img src={logo} alt="FlavorAI Logo" className="login-logo" />
+          {/* Removed the separate logo text span as it seems integrated in the new logo */}
+        </div>
 
-        <h3>Food Preferences</h3>
-        <Select
-          isMulti
-          options={foodOptions}
-          value={foodPreferences}
-          onChange={handleFoodPreferencesChange}
-          placeholder="Select your food preferences"
-        />
+        {/* Tagline */}
+        <p className="tagline">
+          Find Your Flavor – Recipes and Restaurants Tailored for You!
+        </p>
 
-        <h3>Allergies</h3>
-        <input
-          type="text"
-          placeholder="Allergies (comma-separated)"
-          value={allergies}
-          onChange={handleAllergiesChange}
-        />
+        {/* Google Sign-in Button */}
+        <button className="google-signin-button" onClick={handleSignInWithGoogle}>
+          <img 
+            src="../src/assets/Google__G__logo.svg.webp" // Use the local Google logo
+            alt="Google Logo" 
+            className="google-logo" 
+          />
+          Login with Google
+        </button>
 
-        <h3>Upload Google Maps Timeline (Optional)</h3>
-        <input type="file" accept=".json,.kml" onChange={handleTimelineUpload} />
-
-        {timelineData && (
-          <p>Timeline data uploaded.</p>
-        )}
+        {/* Terms and Conditions */}
+        <p className="terms-and-conditions">
+          Terms and Conditions
+        </p>
       </div>
     </div>
   );

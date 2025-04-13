@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage';
@@ -10,23 +10,33 @@ import RecipeInfoPage from './pages/RecipeInfoPage';
 import Recommendations from './components/Recommendations';
 import './App.css';
 
+// Helper component to conditionally render Footer
+const AppContent = () => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className="app">
+      {!isLoginPage && <Header />} {/* Conditionally render Header */}
+      <main className={`main-content ${isLoginPage ? 'login-main' : ''}`}>
+        <Routes>
+          <Route path="/" element={<Recommendations />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/restaurant/:id" element={<RestaurantInfoPage />} />
+          <Route path="/recipe/:id" element={<RecipeInfoPage />} />
+        </Routes>
+      </main>
+      {!isLoginPage && <Footer />} {/* Conditionally render Footer */}
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <div className="app">
-        <Header />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Recommendations />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/restaurant/:id" element={<RestaurantInfoPage />} />
-            <Route path="/recipe/:id" element={<RecipeInfoPage />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <AppContent />
     </Router>
   );
 }
