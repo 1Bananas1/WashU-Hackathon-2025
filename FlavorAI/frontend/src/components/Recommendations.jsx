@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './Recommendations.css';
 import API from '../services/api'; // using the instance
-import { renderStars } from '../utils/starHelpers'; // if you have star logic separated
 
 const Recommendations = () => {
   const [recommendations, setRecommendations] = useState([]);
