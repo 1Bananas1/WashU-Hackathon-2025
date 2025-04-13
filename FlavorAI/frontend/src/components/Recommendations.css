@@ -39,6 +39,12 @@
   padding: 0 0.5rem;
 }
 
+.recommendation-bubble-link {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+
 .recommendation-bubble {
   background-color: white;
   border-radius: 15px;
@@ -47,6 +53,7 @@
   color: #333;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .bubble-header {

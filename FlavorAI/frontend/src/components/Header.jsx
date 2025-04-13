@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
@@ -45,8 +46,9 @@ const Header = () => {
           <div className="close-button" onClick={toggleSidebar}>×</div>
         </div>
         <div className="sidebar-content">
-          <div className="sidebar-item">Profile</div>
-          <div className="sidebar-item">Settings</div>
+          <Link to="/" className="sidebar-item" onClick={toggleSidebar}>Main Menu</Link>
+          <Link to="/profile" className="sidebar-item" onClick={toggleSidebar}>Profile</Link>
+          <Link to="/settings" className="sidebar-item" onClick={toggleSidebar}>Settings</Link>
         </div>
       </div>
 

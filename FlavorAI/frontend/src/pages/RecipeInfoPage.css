@@ -1,0 +1,37 @@
+.recipe-info-page {
+  padding: 20px;
+  background-color: #f0f0f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.recipe-info-page h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.recipe-info-page h3 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 1.1rem;
+  width: 100%;
+  text-align: left;
+}
+
+.ingredients-list,
+.instructions-list {
+  width: 100%;
+  margin-bottom: 15px;
+  padding-left: 20px;
+}
+
+.ingredient-item {
+  padding: 5px 0;
+}
+
+.instructions-list li {
+  padding: 5px 0;
+}

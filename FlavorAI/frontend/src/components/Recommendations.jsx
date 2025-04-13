@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Recommendations.css';
 
 // Sample data for recommendations
@@ -37,17 +38,19 @@ const Recommendations = () => {
         
         <div className="recommendation-bubbles">
           {sampleRecommendations.map((recommendation) => (
-            <div key={recommendation.id} className="recommendation-bubble">
-              <div className="bubble-header">
-                <h3 className="bubble-title">{recommendation.title}</h3>
-              </div>
-              <div className="bubble-content">
-                <div className="bubble-info">
-                  <span className="bubble-distance">{recommendation.distance}</span>
-                  <span className="bubble-rating">★ {recommendation.rating}</span>
+            <Link to={`/restaurant/${recommendation.id}`} key={recommendation.id} className="recommendation-bubble-link">
+              <div className="recommendation-bubble">
+                <div className="bubble-header">
+                  <h3 className="bubble-title">{recommendation.title}</h3>
+                </div>
+                <div className="bubble-content">
+                  <div className="bubble-info">
+                    <span className="bubble-distance">{recommendation.distance}</span>
+                    <span className="bubble-rating">★ {recommendation.rating}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
