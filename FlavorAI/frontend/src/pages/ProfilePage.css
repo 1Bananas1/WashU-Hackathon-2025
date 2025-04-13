@@ -1,9 +1,8 @@
 .profile-page {
   padding: 20px;
-  /* background-color: #f0f0f0; <- Removed */
-  min-height: 100vh; /* Keep min-height if needed for layout */
-  width: 100%; /* Ensure it takes full width */
-  box-sizing: border-box; /* Include padding in width/height */
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,13 +14,13 @@
 }
 
 .profile-card {
-  /* background-color: white; <- Removed */
   padding: 20px;
   border-radius: 8px;
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); <- Removed */
   text-align: center;
   width: 80%;
   max-width: 300px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .profile-picture {
@@ -39,4 +38,20 @@
 
 .profile-card p {
   color: #555;
+}
+
+.profile-details {
+  margin-top: 15px;
+  text-align: left;
+}
+
+.profile-details h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
 }

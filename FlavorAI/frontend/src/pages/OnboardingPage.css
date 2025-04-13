@@ -1,0 +1,71 @@
+/* OnboardingPage.css */
+
+.onboarding-page {
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 20px;
+    text-align: center;
+    background-color: #FAE2C4;  /* Example: light beige background to match overall theme */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .onboarding-page h1 {
+    margin-bottom: 16px;
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .onboarding-page p {
+    margin-bottom: 24px;
+    font-size: 1.1rem;
+    color: #555;
+  }
+  
+  .onboarding-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+  }
+  
+  .onboarding-form label {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .onboarding-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+  }
+  
+  .onboarding-form button {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #DC6142; /* Coral shade to match recommendations page */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .onboarding-form button:hover {
+    background-color: #c85533;
+  }
+  
+  .onboarding-form button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }  
