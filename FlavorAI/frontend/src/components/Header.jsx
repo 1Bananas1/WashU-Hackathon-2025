@@ -55,10 +55,12 @@ const Header = () => {
           <div className="close-button" onClick={toggleSidebar}>×</div>
         </div>
         <div className="sidebar-content">
+          <Link to="/login" className="sidebar-item" onClick={toggleSidebar}>Login</Link>
           <Link to="/" className="sidebar-item" onClick={toggleSidebar}>Main Menu</Link>
           <Link to="/profile" className="sidebar-item" onClick={toggleSidebar}>Profile</Link>
+          <Link to="/taste-profile" className="sidebar-item" onClick={toggleSidebar}>Taste Profile</Link>
           <Link to="/settings" className="sidebar-item" onClick={toggleSidebar}>Settings</Link>
-          <Link to="/login" className="sidebar-item" onClick={toggleSidebar}>Login</Link> {/* Added Login link */}
+          <Link to="/legal" className="sidebar-item" onClick={toggleSidebar}>Legal</Link>
         </div>
       </div>
 

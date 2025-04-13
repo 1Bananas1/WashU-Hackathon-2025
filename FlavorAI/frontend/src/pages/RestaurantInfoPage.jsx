@@ -1,76 +1,85 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import API from '../services/api';
 import './RestaurantInfoPage.css';
 
 const RestaurantInfoPage = () => {
-  // Sample restaurant data
-  const restaurant = {
-    name: 'McDonalds',
-    reviews: [
-      { user: 'User1', rating: 4, comment: 'Good food' },
-      { user: 'User2', rating: 3, comment: 'Average' },
-    ],
-    menus: [
-      { category: 'Burgers', items: ['Big Mac', 'Quarter Pounder'] },
-      { category: 'Sides', items: ['Fries', 'Apple Pie'] },
-    ],
-    contact: {
-      phone: '+1-555-123-4567',
-      address: '123 Main St',
-    },
-    recommendedItems: ['Big Mac', 'Fries'],
-    nutritionInfo: {
-      'Big Mac': { calories: 540, fat: 28 },
-      'Fries': { calories: 230, fat: 11 },
-    },
-  };
+  const { id } = useParams(); // Google place_id or other restaurant ID
+  const [restaurant, setRestaurant] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchRestaurant = async () => {
+      try {
+        // Call GET /restaurant/<id> to get details from your Flask route
+        const { data } = await API.get(`/restaurant/${id}`);
+        setRestaurant(data);
+      } catch (err) {
+        console.error("Error fetching restaurant info:", err);
+        setError("Failed to load restaurant details. Please try again later.");
+      }
+    };
+
+    fetchRestaurant();
+  }, [id]);
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
+
+  if (!restaurant) {
+    return <div>Loading restaurant...</div>;
+  }
 
   return (
     <div className="restaurant-info-page">
       <h2>{restaurant.name}</h2>
 
-      <h3>Reviews</h3>
-      <div className="reviews-section">
-        {restaurant.reviews.map((review, index) => (
-          <div key={index} className="review-item">
-            <p><b>{review.user}:</b> {review.comment} - {review.rating} stars</p>
-          </div>
-        ))}
-      </div>
+      {/* Address & Phone */}
+      {restaurant.address && (
+        <p>
+          <strong>Address:</strong> {restaurant.address}
+        </p>
+      )}
+      {restaurant.phone && (
+        <p>
+          <strong>Phone:</strong> {restaurant.phone}
+        </p>
+      )}
 
-      <h3>Menus</h3>
-      <div className="menus-section">
-        {restaurant.menus.map((menu, index) => (
-          <div key={index} className="menu-category">
-            <h4>{menu.category}</h4>
-            <ul>
-              {menu.items.map((item, itemIndex) => (
-                <li key={itemIndex}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+      {/* Website */}
+      {restaurant.website && (
+        <p>
+          <strong>Website:</strong>{" "}
+          <a href={restaurant.website} target="_blank" rel="noreferrer">
+            {restaurant.website}
+          </a>
+        </p>
+      )}
 
-      <h3>Contact</h3>
-      <p>Phone: {restaurant.contact.phone}</p>
-      <p>Address: {restaurant.contact.address}</p>
+      {/* Opening Hours */}
+      {restaurant.opening_hours && restaurant.opening_hours.length > 0 && (
+        <div className="opening-hours-section">
+          <h3>Opening Hours</h3>
+          <ul>
+            {restaurant.opening_hours.map((day, index) => (
+              <li key={index}>{day}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <h3>Recommended Items</h3>
-      <ul className="recommended-items">
-        {restaurant.recommendedItems.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-
-      <h3>Nutrition Information</h3>
-      <div className="nutrition-info">
-        {Object.entries(restaurant.nutritionInfo).map(([item, info]) => (
-          <div key={item} className="nutrition-item">
-            <h4>{item}</h4>
-            <p>Calories: {info.calories}, Fat: {info.fat}g</p>
-          </div>
-        ))}
-      </div>
+      {/* Reviews */}
+      {restaurant.reviews && restaurant.reviews.length > 0 && (
+        <div className="reviews-section">
+          <h3>User Reviews</h3>
+          {restaurant.reviews.map((rev, i) => (
+            <div key={i} className="review-item">
+              <strong>{rev.user}</strong> ({rev.rating} stars): {rev.comment}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

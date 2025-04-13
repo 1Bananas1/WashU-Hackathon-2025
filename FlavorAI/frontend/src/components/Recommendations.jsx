@@ -1,76 +1,109 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import API from '../services/api';
 import './Recommendations.css';
 
-// Helper function to render stars based on rating
-const renderStars = (rating) => {
-  const fullStars = Math.floor(rating);
-  const halfStar = rating % 1 >= 0.5;
-  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-  
-  return (
-    <>
-      {[...Array(fullStars)].map((_, i) => <span key={`full-${i}`} className="star filled">★</span>)}
-      {halfStar && <span key="half" className="star half">★</span>} {/* Placeholder for half star, needs specific CSS */}
-      {[...Array(emptyStars)].map((_, i) => <span key={`empty-${i}`} className="star empty">☆</span>)}
-    </>
-  );
-};
-
-// Sample data for recommendations (updated with tags)
-const sampleRecommendations = [
-  {
-    id: 1,
-    title: 'Taco Bell',
-    distance: '1.5 miles away',
-    rating: 4.0, // Example rating
-    description: 'Doritos Locos Tacos - Regular',
-    tags: ['Crunchy', 'Low Cal', 'Fan Fav']
-  },
-  {
-    id: 2,
-    title: 'Raising Canes',
-    distance: '7 miles away',
-    rating: 3.0, // Example rating
-    description: '', // No description in the image
-    tags: [] // No tags in the image
-  },
-  {
-    id: 3,
-    title: 'Circle K', // Assuming this is a restaurant/food place for the example
-    distance: '20 miles away',
-    rating: 5.0, // Example rating
-    description: '', // No description in the image
-    tags: [] // No tags in the image
-  }
-];
-
 const Recommendations = () => {
+  const [recommendations, setRecommendations] = useState([]);
+  const userId = localStorage.getItem('userId');
+
+  // Two sliders: radius in miles, number of recommendations
+  const [radius, setRadius] = useState(3);
+  const [numRecs, setNumRecs] = useState(5);
+
+  const handleRadiusChange = (e) => {
+    setRadius(Number(e.target.value));
+  };
+
+  const handleNumRecsChange = (e) => {
+    setNumRecs(Number(e.target.value));
+  };
+
+  useEffect(() => {
+    if (!userId) {
+      console.log("No user logged in!");
+      return;
+    }
+
+    const fetchRecommendations = async () => {
+      try {
+        // We include 'n' in our POST body so the server can return exactly that many results
+        const requestBody = {
+          lat: 48.8575,
+          lon: 2.3514,
+          radius_value: radius,
+          radius_unit: "miles",
+          triedFoods: [],
+          n: numRecs, // new
+        };
+
+        const { data } = await API.post(`/recommendations/${userId}`, requestBody);
+        if (data && data.recommendations) {
+          setRecommendations(data.recommendations);
+        }
+      } catch (err) {
+        console.error("Error fetching recommendations:", err);
+      }
+    };
+
+    fetchRecommendations();
+  }, [userId, radius, numRecs]);
+
   return (
     <div className="recommendations-container">
       <div className="recommendations-content">
         <h1 className="recommendations-title">Recommendations</h1>
-        
+
+        {/* Slider Controls */}
+        <div className="slider-controls">
+          {/* Search Radius Slider */}
+          <div className="slider-group">
+            <label htmlFor="radiusRange">
+              Search Radius: <strong>{radius}</strong> miles
+            </label>
+            <input
+              id="radiusRange"
+              type="range"
+              min="1"
+              max="10"
+              value={radius}
+              onChange={handleRadiusChange}
+              className="slider radius-slider"
+            />
+          </div>
+
+          {/* Number of Recommendations Slider */}
+          <div className="slider-group">
+            <label htmlFor="numRecsRange">
+              Number of Results: <strong>{numRecs}</strong>
+            </label>
+            <input
+              id="numRecsRange"
+              type="range"
+              min="1"
+              max="20"
+              value={numRecs}
+              onChange={handleNumRecsChange}
+              className="slider numrecs-slider"
+            />
+          </div>
+        </div>
+
         <div className="recommendation-bubbles">
-          {sampleRecommendations.map((recommendation) => (
-            <Link to={`/restaurant/${recommendation.id}`} key={recommendation.id} className="recommendation-bubble-link">
+          {recommendations.map((rec, index) => (
+            <Link
+              to={`/restaurant/${rec.restaurant_id || index}`}
+              key={rec.restaurant_id || index}
+              className="recommendation-bubble-link"
+            >
               <div className="recommendation-bubble">
                 <div className="bubble-header">
-                  <h3 className="bubble-title">{recommendation.title}</h3>
-                  <div className="bubble-rating">
-                    {renderStars(recommendation.rating)}
-                  </div>
+                  <h3 className="bubble-title">{rec.name}</h3>
                 </div>
                 <div className="bubble-content">
-                  <p className="bubble-distance">{recommendation.distance}</p>
-                  {recommendation.description && <p className="bubble-description">{recommendation.description}</p>}
-                  {recommendation.tags && recommendation.tags.length > 0 && (
-                    <div className="bubble-tags">
-                      {recommendation.tags.map((tag, index) => (
-                        <span key={index} className="bubble-tag">{tag}</span>
-                      ))}
-                    </div>
-                  )}
+                  <p className="bubble-distance">
+                    {rec.vicinity || "Unknown location"}
+                  </p>
                 </div>
               </div>
             </Link>
