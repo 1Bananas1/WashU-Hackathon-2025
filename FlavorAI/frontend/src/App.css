@@ -5,7 +5,7 @@
   flex-direction: column;
   position: relative;
   overflow-x: hidden;
-  background-color: white;
+  /* background-color: white; <- Removed */
 }
 
 .main-content {
@@ -14,9 +14,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 1rem;
+  align-items: center;
+  /* justify-content: center; <- Let content flow */
+  padding: 0; /* Remove padding */
   overflow-y: auto;
+  background-color: #fbeedb; /* Ensure main area has the beige background */
 }
 
 /* Mobile-first approach */
@@ -26,13 +28,13 @@
   }
 }
 
-/* For larger screens */
+/* For larger screens - Remove border and shadow */
 @media (min-width: 769px) {
   .app {
-    max-width: 500px;
+    max-width: 500px; /* Keep max-width for mobile-like view */
     margin: 0 auto;
-    border-left: 1px solid #eee;
-    border-right: 1px solid #eee;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* border-left: 1px solid #eee; <- Removed */
+    /* border-right: 1px solid #eee; <- Removed */
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); <- Removed */
   }
 }

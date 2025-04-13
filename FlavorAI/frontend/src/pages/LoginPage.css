@@ -1,0 +1,105 @@
+.login-page {
+  display: flex;
+  flex-direction: column; /* Changed to column for vertical layout */
+  justify-content: space-between; /* Pushes content and terms apart */
+  align-items: center;
+  min-height: 100vh;
+  background-color: #fbeedb; /* Updated background color */
+  padding: 2rem;
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.login-content {
+  /* Removed background-color from here */
+  padding: 2rem;
+  border-radius: 8px;
+  /* Removed box-shadow from here, as the page itself has the background */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px; /* Limit width on larger screens */
+  margin-top: auto; /* Push content towards the center/top */
+  /* Added some top margin to push content down slightly from the absolute top */
+  margin-top: 10vh; 
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  /* Add styles for the circular background if needed */
+  /* background-color: #fff; */ /* Example if logo needs a white circle bg */
+  /* border-radius: 50%; */
+  /* padding: 20px; */ /* Adjust padding as needed */
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */ /* Optional shadow */
+}
+
+.login-logo {
+  scale: 2.5;
+  margin-bottom: 50px;
+  width: 100px; /* Adjust size as needed */
+  height: auto;
+  margin-right: 1rem; /* Space between logo and text */
+}
+
+.logo-text {
+  font-size: 2.5rem; /* Adjust size as needed */
+  font-weight: bold;
+  color: #333; /* Adjust color as needed */
+}
+
+.login-content h1 {
+  display: none; /* Hide the h1 as the logo now contains the text */
+}
+
+.login-content p.tagline {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 3rem; /* Increased margin */
+  max-width: 300px; /* Limit width for better readability */
+}
+
+.google-signin-button {
+  background-color: #E8705B; /* Orange-red color from image */
+  color: black; /* Text color from image */
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer;
+  font-size: 1.1rem; /* Slightly larger font */
+  font-weight: 500;
+  margin-bottom: 2rem; /* Adjusted margin */
+  transition: background-color 0.2s ease;
+  width: 80%; /* Adjust width as needed */
+  max-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.google-signin-button:hover {
+  background-color: #d3604d; /* Darker shade on hover */
+}
+
+.google-logo {
+  scale: 1.6;
+  width: 24px; /* Slightly larger logo */
+  height: 24px;
+  margin-right: 22px;
+}
+
+.terms-and-conditions {
+  color: #555; /* Darker gray */
+  font-size: 0.9rem;
+  margin-top: auto; /* Push terms to the bottom */
+  margin-bottom: 2rem; /* Space at the very bottom */
+}
+
+/* Remove unused styles from previous version */
+.login-form {
+  display: none; /* Hide the old form elements */
+}

@@ -6,3 +6,4 @@ sampledata/*
 FlavorAI/backend/*
 !FlavorAI/backend/.gitignore
 FlavorAI/__pycache__
+
