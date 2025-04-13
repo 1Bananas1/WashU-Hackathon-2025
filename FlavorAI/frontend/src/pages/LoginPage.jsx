@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api'; // If you want to call your backend
@@ -10,28 +10,42 @@ const LoginPage = () => {
   const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
 
-  // Example: handle sign-in
+  // Local UI states
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleSignInWithGoogle = async () => {
+    setLoading(true);
+    setErrorMessage("");
+
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("Sign-in successful!", user);
 
-      // Suppose you want to store user in localStorage
+      // Store user ID in local storage (or any other global state approach)
       localStorage.setItem('userId', user.uid);
 
-      // Possibly inform your Flask backend that user exists (optional)
-      // e.g. Onboard them if needed
-      // await API.post(`/onboarding/${user.uid}`, {
-      //   favorites: ["Pizza", "Sushi"], // or gather from a form
-      //   dietary_restrictions: [],
-      //   allergies: []
-      // });
+      // OPTIONAL: Suppose you want to create a user profile on the backend:
+      /*
+      try {
+        await API.post(`/onboarding/${user.uid}`, {
+          favorites: [], // or get from a form
+          dietary_restrictions: [],
+          allergies: []
+        });
+      } catch (onboardingError) {
+        console.error("Error onboarding user:", onboardingError);
+      }
+      */
 
-      // Then navigate to "/"
+      // Navigate to home page or recommendations
       navigate('/');
     } catch (error) {
       console.error("Sign-in error:", error.message);
+      setErrorMessage("Failed to sign in with Google. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,19 +55,40 @@ const LoginPage = () => {
         <div className="logo-container">
           <img src={logo} alt="FlavorAI Logo" className="login-logo" />
         </div>
+
         <p className="tagline">
           Find Your Flavor – Recipes and Restaurants Tailored for You!
         </p>
-        <button className="google-signin-button" onClick={handleSignInWithGoogle}>
-          <img 
-            src="../src/assets/Google__G__logo.svg.webp"
-            alt="Google Logo" 
-            className="google-logo" 
-          />
-          Login with Google
+
+        {/* If there's an error, display it */}
+        {errorMessage && (
+          <div className="error-message">
+            {errorMessage}
+          </div>
+        )}
+
+        {/* Google sign-in button */}
+        <button
+          className="google-signin-button"
+          onClick={handleSignInWithGoogle}
+          disabled={loading}
+        >
+          {loading ? (
+            "Signing in..."
+          ) : (
+            <>
+              <img 
+                src="../src/assets/Google__G__logo.svg.webp"
+                alt="Google Logo" 
+                className="google-logo" 
+              />
+              Login with Google
+            </>
+          )}
         </button>
+
         <p className="terms-and-conditions">
-          Terms and Conditions
+          <a href="/terms" className="terms-link">Terms and Conditions</a>
         </p>
       </div>
     </div>
