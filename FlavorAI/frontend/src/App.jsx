@@ -9,6 +9,7 @@ import Recommendations from './components/Recommendations';
 import TasteProfilePage from './pages/TasteProfilePage';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import LegalPage from './pages/LegalPage';
 import './App.css';
 
 const AppContent = () => {
@@ -27,6 +28,7 @@ const AppContent = () => {
           <Route path="/restaurant/:id" element={<RestaurantInfoPage />} />
           <Route path="/recipe/:id" element={<RecipeInfoPage />} />
           <Route path="/taste-profile" element={<TasteProfilePage />} />
+          <Route path="/legal" element={<LegalPage />} />
         </Routes>
       </main>
       {!isLoginPage && <Footer />}

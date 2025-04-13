@@ -17,8 +17,8 @@ const Recommendations = () => {
       try {
         // Example: use lat/lon from your app state or default
         const requestBody = {
-          lat: 40.7128,
-          lon: -74.0060,
+          lat: 38.6270,
+          lon: -90.1994,
           radius_value: 3,
           radius_unit: "miles",
           triedFoods: []

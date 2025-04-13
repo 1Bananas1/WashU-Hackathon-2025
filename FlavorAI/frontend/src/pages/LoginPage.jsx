@@ -1,45 +1,50 @@
 import React, { useState } from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
-import API from '../services/api'; // If you want to call your backend
+import { Link } from 'react-router-dom';
+import API from '../services/api';
 import './LoginPage.css';
 import logo from '../assets/The_chef_man.png'; // Use actual logo
 
 const LoginPage = () => {
-  const auth = getAuth();
-  const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
-
-  // Local UI states
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSignInWithGoogle = async () => {
+    // Development bypass: if in development, skip real auth.
+    // You can check process.env.NODE_ENV or a custom flag, for example:
+    if (process.env.NODE_ENV === 'development') {
+      const testUserId = "user123";
+      console.log("Development bypass activated. Using test user:", testUserId);
+      localStorage.setItem('userId', testUserId);
+      // Optionally, you might prefill test profile data on the backend.
+      navigate('/');
+      return;
+    }
+
     setLoading(true);
     setErrorMessage("");
 
     try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("Sign-in successful!", user);
 
-      // Store user ID in local storage (or any other global state approach)
+      // Store user ID in local storage
       localStorage.setItem('userId', user.uid);
 
-      // OPTIONAL: Suppose you want to create a user profile on the backend:
+      // Optionally call your backend to onboard the user
       /*
-      try {
-        await API.post(`/onboarding/${user.uid}`, {
-          favorites: [], // or get from a form
-          dietary_restrictions: [],
-          allergies: []
-        });
-      } catch (onboardingError) {
-        console.error("Error onboarding user:", onboardingError);
-      }
+      await API.post(`/onboarding/${user.uid}`, {
+        favorites: [], // or get from user input form
+        dietary_restrictions: [],
+        allergies: []
+      });
       */
 
-      // Navigate to home page or recommendations
       navigate('/');
     } catch (error) {
       console.error("Sign-in error:", error.message);
@@ -55,27 +60,18 @@ const LoginPage = () => {
         <div className="logo-container">
           <img src={logo} alt="FlavorAI Logo" className="login-logo" />
         </div>
-
         <p className="tagline">
           Find Your Flavor – Recipes and Restaurants Tailored for You!
         </p>
-
-        {/* If there's an error, display it */}
         {errorMessage && (
-          <div className="error-message">
-            {errorMessage}
-          </div>
+          <div className="error-message">{errorMessage}</div>
         )}
-
-        {/* Google sign-in button */}
         <button
           className="google-signin-button"
           onClick={handleSignInWithGoogle}
           disabled={loading}
         >
-          {loading ? (
-            "Signing in..."
-          ) : (
+          {loading ? "Signing in..." : (
             <>
               <img 
                 src="../src/assets/Google__G__logo.svg.webp"
@@ -86,9 +82,8 @@ const LoginPage = () => {
             </>
           )}
         </button>
-
         <p className="terms-and-conditions">
-          <a href="/terms" className="terms-link">Terms and Conditions</a>
+          <Link to="/legal">Terms & Privacy</Link>
         </p>
       </div>
     </div>
