@@ -11,23 +11,37 @@ app = Flask(__name__)
 def onboard_user(user_id):
     """
     Onboard a new user by creating their initial taste profile.
-    Expects JSON body with a 'favorites' list, e.g.:
+    Expects JSON body, for example:
     {
-      "favorites": ["Pizza", "Sushi", "Tacos"]
+      "favorites": ["Pizza", "Sushi", "Tacos"],
+      "dietary_restrictions": ["gluten-free", "halal"],
+      "allergies": ["nuts", "shellfish"]
     }
-    The build_onboarding_profile function will also prompt for
-    dietary restrictions/allergies in the console (currently interactive).
+
+    The build_onboarding_profile function uses that data, calls Gemini,
+    and writes a new CSV in personaldata/<user_id>_profile.csv.
     """
     data = request.get_json(force=True)
     favorites_list = data.get("favorites", [])
-    # Create a small DataFrame from the user’s favorites
+    dietary_list = data.get("dietary_restrictions", [])
+    allergies_list = data.get("allergies", [])
+
+    # Create a small DataFrame for the user's favorite foods
     favorites_df = pd.DataFrame({"food_name": favorites_list})
 
-    user_profile = build_onboarding_profile(user_id, favorites_df)
+    # Call the logic function, passing dietary/allergy lists
+    user_profile = build_onboarding_profile(
+        user_id,
+        favorites_df,
+        dietary_list=dietary_list,
+        allergies_list=allergies_list
+    )
+
     return jsonify({
         "message": f"Onboarding complete for user {user_id}",
         "user_profile": user_profile
     })
+
 
 @app.route("/userprofile/<user_id>", methods=["GET"])
 def api_user_profile(user_id):
