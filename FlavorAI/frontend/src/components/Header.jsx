@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
-import logo from '../assets/The_chef_man.png'; // Import the logo
+import logo from '../assets/The_chef_man.png';
 
 const Header = () => {
   const [isToggled, setIsToggled] = useState(false); // false = Eating Out, true = Stay In
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const userId = localStorage.getItem('userId');
+  const navigate = useNavigate();
 
   const handleToggle = () => {
     setIsToggled(!isToggled);
@@ -13,6 +15,16 @@ const Header = () => {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // Handles both logout and sidebar toggling.
+  const handleAuthClick = () => {
+    toggleSidebar();
+    if (userId) {
+      // Perform logout: remove user ID and redirect to the home page (or login page)
+      localStorage.removeItem('userId');
+      navigate('/');
+    }
   };
 
   return (
@@ -32,7 +44,6 @@ const Header = () => {
             <span className="toggle-button"></span>
           </label>
         </div>
-        {/* Removed the text below the toggle */}
       </div>
 
       {/* Logo in the Center */}
@@ -42,20 +53,24 @@ const Header = () => {
 
       {/* Settings Icon */}
       <div className="settings-icon" onClick={toggleSidebar}>
-        {/* Using a simple gear icon SVG */}
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
           <circle cx="12" cy="12" r="3"/>
         </svg>
       </div>
 
-      {/* Sidebar (remains the same) */}
+      {/* Sidebar */}
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="close-button" onClick={toggleSidebar}>×</div>
         </div>
         <div className="sidebar-content">
-          <Link to="/login" className="sidebar-item" onClick={toggleSidebar}>Login</Link>
+          {/* Conditional rendering based on authentication status */}
+          {userId ? (
+            <div className="sidebar-item" onClick={handleAuthClick}>Logout</div>
+          ) : (
+            <Link to="/login" className="sidebar-item" onClick={toggleSidebar}>Login</Link>
+          )}
           <Link to="/" className="sidebar-item" onClick={toggleSidebar}>Main Menu</Link>
           <Link to="/profile" className="sidebar-item" onClick={toggleSidebar}>Profile</Link>
           <Link to="/taste-profile" className="sidebar-item" onClick={toggleSidebar}>Taste Profile</Link>

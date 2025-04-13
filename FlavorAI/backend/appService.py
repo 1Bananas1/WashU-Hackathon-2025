@@ -51,8 +51,8 @@ def api_user_profile(user_id):
 
 @app.route("/restaurants", methods=["GET"])
 def api_find_restaurants():
-    lat = float(request.args.get("lat", 34.052235))
-    lon = float(request.args.get("lon", -118.243683))
+    lat = float(request.args.get("lat", 48.8575))
+    lon = float(request.args.get("lon", 2.3514))
     radius_value = float(request.args.get("radius_value", 2))
     radius_unit = request.args.get("radius_unit", "miles")
     results = find_nearby_restaurants(lat, lon, radius_value, radius_unit)
@@ -61,8 +61,8 @@ def api_find_restaurants():
 @app.route("/recommendations/<user_id>", methods=["POST"])
 def api_recommendations(user_id):
     data = request.get_json(force=True)
-    lat = data.get("lat", 34.052235)
-    lon = data.get("lon", -118.243683)
+    lat = data.get("lat", 48.8575)
+    lon = data.get("lon", 2.3514)
     radius_value = data.get("radius_value", 2)
     radius_unit = data.get("radius_unit", "miles")
     tried = data.get("triedFoods", [])
