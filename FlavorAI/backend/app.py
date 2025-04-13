@@ -8,14 +8,15 @@ from plyer import gps
 
 # Set up project paths and import API keys
 current_dir = os.path.dirname(os.path.abspath(__file__))
-key_dir = os.path.abspath(os.path.join(current_dir, "..", ".."))
+key_dir = os.path.abspath(os.path.join(current_dir, ".."))
 if key_dir not in sys.path:
     sys.path.insert(0, key_dir)
 from APIkey import PlacesAPI_key, geminiapi_key
 
 # Global variables
-gps_location = {}  # Dictionary for storing device GPS location
-radius = 1000      # Search radius (in meters) for nearby restaurants
+LOCATION = {} # Dictionary for storing device GPS location
+RADIUS = 1000 # Search radius (in meters) for nearby restaurants
+RESTAURANT_COUNT = 20 # Number of nearby restaurants to return
 
 # ---------------------
 # 1. Acquire GPS Location using Device GPS
@@ -77,14 +78,15 @@ def find_nearby_restaurants(lat, lon):
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
         'location': f'{lat},{lon}',
-        'radius': radius,
+        'radius': RADIUS,
         'type': 'restaurant',
         'key': PlacesAPI_key
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
-        return data.get('results', [])
+        results = data.get('results', [])
+        return results[:RESTAURANT_COUNT]
     else:
         print("Error contacting Google Maps API:", response.status_code, response.text)
         return []
@@ -249,8 +251,25 @@ def get_user_profile():
     try:
         df = pd.read_csv(csv_file)
     except FileNotFoundError:
-        print(f"Error: CSV file '{csv_file}' not found.")
-        return None
+        print(f"Error: CSV file '{csv_file}' not found, generating fallback data.")
+        data = {
+                "user_id": ["user123"],
+                "salty": [0.8],
+                "umami": [0.7],
+                "spicy": [0.3],
+                "sweet": [0.5],
+                "sour": [0.4],
+                "texture_preferences": ["creamy, crispy"],
+                "dietary_restrictions": ["gluten-free"],
+                "allergies": ["peanuts"]
+            }
+
+        # Create a DataFrame
+        df = pd.DataFrame(data)
+
+        # Save the DataFrame to a CSV file without the index column
+        csv_filename = "user_profile.csv"
+        df.to_csv(csv_filename, index=False)
 
     row = df.iloc[0].to_dict()  # For demonstration, use the first row
     favorite_tastes = {taste: row.get(taste, 0) for taste in ["salty", "umami", "spicy", "sweet", "sour"]}
