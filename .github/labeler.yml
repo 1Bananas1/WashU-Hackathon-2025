@@ -1,0 +1,12 @@
+documentation:
+  - 'docs/**'
+  - '**/*.md'
+
+frontend:
+  - 'src/frontend/**'
+
+backend:
+  - 'src/backend/**'
+
+tests:
+  - 'tests/**'
