@@ -1,0 +1,161 @@
+=============================================
+FLAVORAI - INSTALLATION GUIDE
+=============================================
+
+This guide will help you set up both the frontend and backend components of the FlavorAI application.
+
+=============================================
+PREREQUISITES
+=============================================
+
+1. Node.js (v18.0.0 or higher)
+2. npm (v8.0.0 or higher)
+3. Python (v3.9 or higher)
+4. pip (latest version)
+5. Git
+
+=============================================
+FRONTEND SETUP (REACT)
+=============================================
+
+1. Clone the repository (if you haven't already):
+   ```
+   git clone <repository-url>
+   cd FlavorAI/frontend
+   ```
+
+2. Install frontend dependencies:
+   ```
+   npm install
+   ```
+
+3. Start the development server:
+   ```
+   npm run dev
+   ```
+
+4. The frontend should now be running at http://localhost:5173/ (or another port if 5173 is in use)
+
+=============================================
+BACKEND SETUP (PYTHON)
+=============================================
+
+1. Navigate to the backend directory:
+   ```
+   cd ../backend
+   ```
+
+2. Create and activate a virtual environment (recommended):
+   
+   For Windows:
+   ```
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+   
+   For macOS/Linux:
+   ```
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install backend dependencies:
+   ```
+   pip install -r ../requirements.txt
+   ```
+
+4. Set up environment variables:
+   Create a .env file in the backend directory with the following variables:
+   ```
+   FLASK_APP=app.py
+   FLASK_ENV=development
+   DATABASE_URL=sqlite:///flavorai.db
+   GEMINI_API_KEY=your_gemini_api_key_here
+   ```
+
+5. Initialize the database:
+   ```
+   flask db init
+   flask db migrate -m "Initial migration"
+   flask db upgrade
+   ```
+
+6. Start the backend server:
+   ```
+   flask run
+   ```
+
+7. The backend should now be running at http://localhost:5000/
+
+=============================================
+GEMINI FLASH API SETUP
+=============================================
+
+1. Visit the Google AI Studio (https://makersuite.google.com/) and sign up for access to Gemini Flash.
+
+2. Create an API key and add it to your .env file as GEMINI_API_KEY.
+
+3. Follow Google's documentation for any additional setup requirements for Gemini Flash.
+
+=============================================
+TROUBLESHOOTING
+=============================================
+
+1. If you encounter "Module not found" errors in the backend:
+   - Make sure your virtual environment is activated
+   - Try reinstalling the dependencies: pip install -r ../requirements.txt
+
+2. If the frontend fails to connect to the backend:
+   - Check that both servers are running
+   - Verify that CORS is properly configured in the backend
+   - Check the API endpoint URLs in the frontend code
+
+3. For issues with Gemini Flash:
+   - Verify your API key is correct
+   - Check Google's documentation for any service disruptions
+
+=============================================
+DEVELOPMENT WORKFLOW
+=============================================
+
+1. Frontend changes:
+   - Edit files in the src/ directory
+   - The development server will automatically reload with your changes
+
+2. Backend changes:
+   - Edit Python files in the backend directory
+   - Restart the Flask server to apply changes (in some cases Flask will auto-reload)
+
+3. Database changes:
+   - Modify models in your backend code
+   - Run migrations:
+     ```
+     flask db migrate -m "Description of changes"
+     flask db upgrade
+     ```
+
+=============================================
+DEPLOYMENT
+=============================================
+
+For production deployment:
+
+1. Frontend:
+   ```
+   npm run build
+   ```
+   This creates optimized files in the dist/ directory that can be served by any static file server.
+
+2. Backend:
+   - Use a production WSGI server like Gunicorn
+   - Set FLASK_ENV=production in your environment variables
+   - Consider using a production-ready database like PostgreSQL
+
+=============================================
+ADDITIONAL RESOURCES
+=============================================
+
+- React documentation: https://react.dev/
+- Vite documentation: https://vitejs.dev/
+- Flask documentation: https://flask.palletsprojects.com/
+- Gemini Flash documentation: https://ai.google.dev/
