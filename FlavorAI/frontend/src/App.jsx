@@ -6,6 +6,7 @@ import ProfilePage from './pages/ProfilePage';
 import RestaurantInfoPage from './pages/RestaurantInfoPage';
 import RecipeInfoPage from './pages/RecipeInfoPage';
 import Recommendations from './components/Recommendations';
+import TasteProfilePage from './pages/TasteProfilePage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import './App.css';
